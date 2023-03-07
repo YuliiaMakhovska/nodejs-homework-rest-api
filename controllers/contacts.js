@@ -5,16 +5,54 @@ const listContacts = async (req, res) => {
   const { _id: owner } = req.user;
   const { page = 1, limit = 20, favorite } = req.query;
   const skip = (page - 1) * limit;
-  const result = await Contact.find(
-    favorite ? { owner, favorite } : { owner },
-    "",
-    {
+
+  if (!favorite) {
+    const result = await Contact.find({ owner }, "", {
       skip,
       limit,
-    }
-  ).populate("owner", "subscription name email");
+    }).populate("owner", "subscription name email");
+    res.json(result);
+    return;
+  }
+  const result = await Contact.find({ owner, favorite }, "", {
+    skip,
+    limit,
+  }).populate("owner", "subscription name email");
   res.json(result);
 };
+
+// ----------------------------------------------------------------------//
+//   if (favorite === "true") {
+//     const result = await Contact.find({ owner, favorite: true }, "", {
+//       skip,
+//       limit,
+//     }).populate("owner", "subscription name email");
+//     res.json(result);
+//   } else if (favorite === "false") {
+//     const result = await Contact.find({ owner, favorite: false }, "", {
+//       skip,
+//       limit,
+//     }).populate("owner", "subscription name email");
+//     res.json(result);
+//   } else {
+//     const result = await Contact.find({ owner }, "", {
+//       skip,
+//       limit,
+//     }).populate("owner", "subscription name email");
+//     res.json(result);
+//   }
+// };
+// ----------------------------------------------------------------------//
+//   const result = await Contact.find(
+//     favorite ? { owner, favorite } : { owner },
+//     "",
+//     {
+//       skip,
+//       limit,
+//     }
+//   ).populate("owner", "subscription name email");
+//   res.json(result);
+// };
 
 const getContactById = async (req, res) => {
   const { _id: owner } = req.user;
