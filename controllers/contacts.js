@@ -5,20 +5,29 @@ const listContacts = async (req, res) => {
   const { _id: owner } = req.user;
   const { page = 1, limit = 20, favorite } = req.query;
   const skip = (page - 1) * limit;
-
-  if (!favorite) {
-    const result = await Contact.find({ owner }, "", {
-      skip,
-      limit,
-    }).populate("owner", "subscription name email");
-    res.json(result);
-    return;
+  const filters = { owner };
+  if (favorite) {
+    filters.favorite = favorite;
   }
-  const result = await Contact.find({ owner, favorite }, "", {
+  const result = await Contact.find(filters, "", {
     skip,
     limit,
   }).populate("owner", "subscription name email");
   res.json(result);
+  // ----------------------------------------------------------------------//
+  //   if (!favorite) {
+  //     const result = await Contact.find({ owner }, "", {
+  //       skip,
+  //       limit,
+  //     }).populate("owner", "subscription name email");
+  //     res.json(result);
+  //     return;
+  //   }
+  //   const result = await Contact.find({ owner, favorite }, "", {
+  //     skip,
+  //     limit,
+  //   }).populate("owner", "subscription name email");
+  //   res.json(result);
 };
 
 // ----------------------------------------------------------------------//
